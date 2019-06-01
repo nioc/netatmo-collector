@@ -1,0 +1,16 @@
+{
+    "name": "nioc/netatmo-collector",
+    "description": "Netatmo collector is a script for requesting measures from Netatmo devices",
+    "homepage": "https://github.com/nioc/netatmo-collector",
+    "version": "0.1.0",
+    "license": "AGPL-3.0-only",
+    "require": {
+        "influxdb/influxdb-php": "^1.14",
+        "apache/log4php": "^2.3"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "mkdir -p vendor/netatmo/netatmo-api-php && cd vendor/netatmo/netatmo-api-php && git clone https://github.com/Netatmo/Netatmo-API-PHP.git ."
+        ]
+    }
+}
