@@ -11,7 +11,7 @@
     <param name="file" value="netatmo-collect.log"/>
   </appender>
   <root>
-    <level value="TRACE"/>
-    <appender_ref ref="console"/>
+    <level value="INFO"/>
+    <appender_ref ref="log"/>
   </root>
 </configuration>

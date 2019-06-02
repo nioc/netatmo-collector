@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/nioc/netatmo-collector.svg)](https://github.com/nioc/netatmo-collector/releases/latest)
 [![Codacy grade](https://img.shields.io/codacy/grade/ef9c7195ad5945309bb13b5899d63cd8.svg)](https://www.codacy.com/app/nioc/netatmo-collector)
 
-Netatmo collector is a script for requesting measures from Netatmo devices.
+Netatmo collector is a PHP script for requesting measures from Netatmo devices.
 
 ## Key features
 - Automatic script (can be used with cron for example),
@@ -26,7 +26,35 @@ Install dependencies with [composer](https://getcomposer.org/): `composer instal
 ### Grafana
 
 You need a [Grafana server](https://grafana.com/grafana/download) working.
+Create a new dashboard with Influxdb or import it from file (soon).
 
+## Usage
+
+### Initialization
+
+In order to collect oldest measures, script accepts a start date (YYYY-MM-DD) as an optional argument. 
+Open a shell, go in script directory and execute it: `php -f index.php 2018-12-31`.
+
+### Scheduling repeated executions
+
+Add to your scheduler (cron for exemple) following command (change the path `/usr/local/bin/netatmo-collect/` according to your installation):
+````
+# /etc/cron.d/netatmo-collect: crontab fragment for requesting Netatmo measures
+# Requesting Netatmo measures and storing to database every 12 hours
+ 0 */12    * * *     root   php -f /usr/local/bin/netatmo-collect/index.php >> /var/log/syslog 2>&1
+````
+
+### Logs
+
+Log settings can be found in `config.xml` file.
+In production mode, the default configuration use a file (`netatmo-collect.log`) for logging at level `INFO`.
+For debugging, you can output to console and set a more verbose level (`DEBUG` or even `TRACE`) by overriding the `root` section:
+````
+  <root>
+    <level value="DEBUG"/>
+    <appender_ref ref="console"/>
+  </root>
+````
 
 ## Versioning
 
@@ -40,7 +68,7 @@ Pull requests are welcomed.
 
 ## Credits
 
-* **[Nioc](https://github.com/nioc/)** - *Initial work*
+- **[Nioc](https://github.com/nioc/)** - *Initial work*
 
 See also the list of [contributors](https://github.com/nioc/netatmo-collector/contributors) to this project.
 

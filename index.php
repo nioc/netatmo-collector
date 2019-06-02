@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
 
+chdir(__DIR__);
 require __DIR__.'/vendor/autoload.php';
 $config = include 'config.php';
 require 'Netatmo.php';
