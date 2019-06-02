@@ -3,6 +3,7 @@
 [![license: AGPLv3](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![GitHub release](https://img.shields.io/github/release/nioc/netatmo-collector.svg)](https://github.com/nioc/netatmo-collector/releases/latest)
 [![Codacy grade](https://img.shields.io/codacy/grade/ef9c7195ad5945309bb13b5899d63cd8.svg)](https://www.codacy.com/app/nioc/netatmo-collector)
+
 Netatmo collector is a script for requesting measures from Netatmo devices.
 
 ## Key features
@@ -50,4 +51,4 @@ This project is powered by the following components:
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE.md) file for details
+This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE.md) file for details.
