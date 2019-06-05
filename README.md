@@ -17,22 +17,43 @@ Netatmo collector is a PHP script for requesting measures from Netatmo devices.
 ### Script
 
 Download this project and extract files to directory of your choice.
+
 Configure a Netatmo [application](https://dev.netatmo.com/myaccount/createanapp) and user account informations in `config.php`.
 
 ### Dependencies
 
 Install dependencies with [composer](https://getcomposer.org/): `composer install`.
 
+### InfluxDB
+
+You need [InfluxDB](https://docs.influxdata.com/influxdb/v1.7/introduction/installation/) installed.
+
+Default values are ok, but configuration can be changed (see [docs](https://docs.influxdata.com/influxdb/v1.7/administration/config/)).
+
+Script will create database.
+
 ### Grafana
 
-You need a [Grafana server](https://grafana.com/grafana/download) working.
-Create a new dashboard with Influxdb or import it from file (soon).
+You need [Grafana](https://grafana.com/grafana/download) installed.
+
+Import [JSON file](dashboard.json) from Grafana GUI (Create / Import).
+
+Create InfluxDB data source, mainly name and influxDB URL, for example:  `http://localhost:8086` (Configuration / Data sources / Add).
+
+Configure dashboard variables (Dashboard / Settings / Variables):
+- `datasource` = the data source name you set up,
+- `devices` = the Netatmo station name (only one station by dashboard),
+- `modules` = comma separated list of modules name,
+- `windGauge` = wind gauge module name (obviously),
+- `rainGauge` = rain gauge module name (obviously),
+- `mainModule` = main module name (obviously).
 
 ## Usage
 
 ### Initialization
 
-In order to collect oldest measures, script accepts a start date (YYYY-MM-DD) as an optional argument. 
+In order to collect oldest measures, script accepts a start date (YYYY-MM-DD) as an optional argument.
+
 Open a shell, go in script directory and execute it: `php -f index.php 2018-12-31`.
 
 ### Scheduling repeated executions
@@ -47,7 +68,9 @@ Add to your scheduler (cron for exemple) following command (change the path `/us
 ### Logs
 
 Log settings can be found in `config.xml` file.
+
 In production mode, the default configuration use a file (`netatmo-collect.log`) for logging at level `INFO`.
+
 For debugging, you can output to console and set a more verbose level (`DEBUG` or even `TRACE`) by overriding the `root` section:
 ````
   <root>
