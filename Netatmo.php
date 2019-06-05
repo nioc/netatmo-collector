@@ -17,6 +17,7 @@ class Netatmo
     private $storage;
     const MAX_REQUESTS_BY_MODULE = 50;
     const WAITING_TIME_BEFORE_NEXT_MODULE = 10;
+    const COLLECT_INTERVAL = 1000;
 
     /**
      * Initialize a Netatmo wrapper
@@ -170,16 +171,17 @@ class Netatmo
         // Get measures by requesting API until max requests is reached, all data are reiceved or an error occurs
         do {
             $requestCount++;
+            $measures = [];
             try {
                 $this->logger->debug('Starting timestamp: ' . $lastTimestamp . ' (' . date('Y-m-d H:i:sP', $lastTimestamp) . ')');
                 if (!$this->isMocked) {
-                    $measure = $this->client->getMeasure($deviceId, $moduleId, 'max', $type, $lastTimestamp, $this->todayTimestamp, 1024, false, true);
-                // file_put_contents("mock2/$moduleType.json", json_encode($measure));
+                    $measures = $this->client->getMeasure($deviceId, $moduleId, 'max', $type, $lastTimestamp, $this->todayTimestamp, 1024, false, true);
+                // file_put_contents("mock2/$moduleType.json", json_encode($measures));
                 } else {
                     $this->logger->debug("Mocked: mock/$moduleType.json");
-                    $measure = json_decode(file_get_contents("mock/$moduleType.json"), true);
+                    $measures = json_decode(file_get_contents("mock/$moduleType.json"), true);
                 }
-                // $this->logger->trace('Measure: '. json_encode($measure));
+                // $this->logger->trace('Measure: '. json_encode($measures));
             } catch (Netatmo\Exceptions\NAClientException $e) {
                 $hasError = true;
                 $this->logger->error("An error occured while retrieving device $deviceName / module: $moduleName ($moduleType) measurements");
@@ -188,7 +190,7 @@ class Netatmo
     
             // Store module measures in database
             $points = [];
-            foreach ($measure as $timestamp => $values) {
+            foreach ($measures as $timestamp => $values) {
                 $dt = new DateTime();
                 $dt->setTimestamp($timestamp);
                 // $this->logger->trace('Handling values for ' . $dt->format('Y-m-d H:i:sP'));
@@ -209,7 +211,7 @@ class Netatmo
                 $hasError = true;
                 $this->logger->error("Can not write device $deviceName / module: $moduleName ($moduleType) measurements");
             }
-        } while ($lastTimestamp <= $this->todayTimestamp && !$hasError && $requestCount < $this::MAX_REQUESTS_BY_MODULE);
+        } while ($lastTimestamp <= ($this->todayTimestamp - $this::COLLECT_INTERVAL) && !$hasError && $requestCount < $this::MAX_REQUESTS_BY_MODULE);
         // Wait some seconds before continue to avoid reaching user limit API
         sleep($this::WAITING_TIME_BEFORE_NEXT_MODULE);
     }
