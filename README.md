@@ -7,10 +7,13 @@
 Netatmo collector is a PHP script for requesting measures from Netatmo devices.
 
 ## Key features
-- Automatic script (can be used with cron for example),
-- Initialization step (providing a start date and wait for the magic),
-- Store measures into an InfluxDB database,
-- Explore data with Grafana.
+
+-   Automatic script (can be used with cron for example),
+-   Initialization step (providing a start date and wait for the magic),
+-   Store measures into an InfluxDB database,
+-   Explore data with Grafana.
+
+![screenshot](screenshot.png)
 
 ## Installation
 
@@ -41,12 +44,13 @@ Import [JSON file](dashboard.json) from Grafana GUI (Create / Import).
 Create InfluxDB data source, mainly name and influxDB URL, for example:  `http://localhost:8086` (Configuration / Data sources / Add).
 
 Configure dashboard variables (Dashboard / Settings / Variables):
-- `datasource` = the data source name you set up,
-- `devices` = the Netatmo station name (only one station by dashboard),
-- `modules` = comma separated list of modules name,
-- `windGauge` = wind gauge module name (obviously),
-- `rainGauge` = rain gauge module name (obviously),
-- `mainModule` = main module name (obviously).
+
+-   `datasource` = the data source name you set up,
+-   `devices` = the Netatmo station name (only one station by dashboard),
+-   `modules` = comma separated list of modules name,
+-   `windGauge` = wind gauge module name (obviously),
+-   `rainGauge` = rain gauge module name (obviously),
+-   `mainModule` = main module name (obviously).
 
 ## Usage
 
@@ -59,11 +63,12 @@ Open a shell, go in script directory and execute it: `php -f index.php 2018-12-3
 ### Scheduling repeated executions
 
 Add to your scheduler (cron for exemple) following command (change the path `/usr/local/bin/netatmo-collect/` according to your installation):
-````
+
+```shell
 # /etc/cron.d/netatmo-collect: crontab fragment for requesting Netatmo measures
 # Requesting Netatmo measures and storing to database every 12 hours
  0 */12    * * *     root   php -f /usr/local/bin/netatmo-collect/index.php >> /var/log/syslog 2>&1
-````
+```
 
 ### Logs
 
@@ -72,12 +77,13 @@ Log settings can be found in `config.xml` file.
 In production mode, the default configuration use a file (`netatmo-collect.log`) for logging at level `INFO`.
 
 For debugging, you can output to console and set a more verbose level (`DEBUG` or even `TRACE`) by overriding the `root` section:
-````
+
+```xml
   <root>
     <level value="DEBUG"/>
     <appender_ref ref="console"/>
   </root>
-````
+```
 
 ## Versioning
 
@@ -91,14 +97,15 @@ Pull requests are welcomed.
 
 ## Credits
 
-- **[Nioc](https://github.com/nioc/)** - *Initial work*
+-   **[Nioc](https://github.com/nioc/)** - _Initial work_
 
 See also the list of [contributors](https://github.com/nioc/netatmo-collector/contributors) to this project.
 
 This project is powered by the following components:
-- [Netatmo-API-PHP](https://github.com/Netatmo/Netatmo-API-PHP)
-- [influxdb-php](https://github.com/influxdata/influxdb-php) (MIT)
-- [Apache log4php](http://logging.apache.org/log4php/) (Apache License)
+
+-   [Netatmo-API-PHP](https://github.com/Netatmo/Netatmo-API-PHP)
+-   [influxdb-php](https://github.com/influxdata/influxdb-php) (MIT)
+-   [Apache log4php](http://logging.apache.org/log4php/) (Apache License)
 
 ## License
 
