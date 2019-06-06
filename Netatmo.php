@@ -87,7 +87,7 @@ class Netatmo
             }
             $this->logger->debug('Stations received');
             // $this->logger->trace('Stations: '.json_encode($data));
-        } catch (Netatmo\Exceptions\NAClientException $ex) {
+        } catch (Netatmo\Exceptions\NAClientException $e) {
             $this->logger->error('An error occured while retrieving data');
             $this->logger->debug('Reason: '.$e->getMessage());
             return false;
