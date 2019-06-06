@@ -7,6 +7,7 @@
         'host' => 'localhost',
         'port' => '8086',
         'database' => 'netatmo',
+        'retentionDuration' => '1825d',
         // Netatmo application
         'client_id' => '',
         'client_secret' => '',

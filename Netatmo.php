@@ -45,7 +45,7 @@ class Netatmo
 
         // Initialize database access
         $this->storage = new Storage();
-        $this->storage->connect($config['host'], $config['port'], $config['database']);
+        $this->storage->connect($config['host'], $config['port'], $config['database'], $config['retentionDuration']);
     }
 
     /**

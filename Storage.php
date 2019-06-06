@@ -23,9 +23,10 @@ class Storage
      * @param string $host InfluxDB server hostname (exemple: 'localhost')
      * @param string $port InfluxDB server listening port (exemple: '8086')
      * @param string $database InfluxDB database used (exemple: 'netatmo')
+     * @param string $retentionDuration InfluxDB database retention policy duration (exemple: '1825d')
      * @return void
      */
-    public function connect($host, $port, $database)
+    public function connect($host, $port, $database, $retentionDuration)
     {
         $this->logger->debug("Connecting to database $database (http://$host:$port)");
         try {
@@ -43,8 +44,8 @@ class Storage
             if (!$this->database->exists()) {
                 $this->logger->trace('Database does not exist');
                 $this->database->create();
-                $this->database->alterRetentionPolicy(new InfluxDB\Database\RetentionPolicy('autogen', '1825d', 1, true));
-                $this->logger->info('Database created successfully');
+                $this->database->alterRetentionPolicy(new InfluxDB\Database\RetentionPolicy('autogen', $retentionDuration, 1, true));
+                $this->logger->info('Database created successfully with retention duration: ' . $retentionDuration);
             }
         } catch (Exception $e) {
             $this->logger->error('Can not create database');
