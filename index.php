@@ -27,6 +27,9 @@ if ($argc > 1) {
 
 // Initialize wrapper
 $netatmo = new Netatmo($config);
+if ($netatmo->hasError) {
+    exit(1);
+}
 
 // Authentication with Netatmo server (OAuth2)
 if (!$netatmo->getExistingTokens()) {

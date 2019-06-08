@@ -15,6 +15,7 @@ class Netatmo
     public $devices;
     private $todayTimestamp;
     private $storage;
+    public $hasError;
     const MAX_REQUESTS_BY_MODULE = 50;
     const WAITING_TIME_BEFORE_NEXT_MODULE = 10;
     const COLLECT_INTERVAL = 1000;
@@ -31,6 +32,12 @@ class Netatmo
         $this->todayTimestamp = time();
 
         // Initialize Netatmo client
+        $this->hasError = false;
+        if (!key_exists('client_id', $config) || !key_exists('client_secret', $config) || $config['client_id'] === '' || $config['client_secret'] === '') {
+            $this->logger->error('Client id or secret id is not set, please update config.php');
+            $this->hasError = true;
+            return;
+        }
         $configNetatmo = [];
         $configNetatmo['client_id'] = $config['client_id'];
         $configNetatmo['client_secret'] = $config['client_secret'];
