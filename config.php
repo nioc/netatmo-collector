@@ -10,8 +10,5 @@
         'retentionDuration' => '1825d',
         // Netatmo application
         'client_id' => '',
-        'client_secret' => '',
-        // Netatmo user account
-        'username' => '',
-        'password' => ''
+        'client_secret' => ''
     ];

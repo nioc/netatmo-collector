@@ -29,8 +29,22 @@ if ($argc > 1) {
 $netatmo = new Netatmo($config);
 
 // Authentication with Netatmo server (OAuth2)
-if (!$netatmo->getToken()) {
-    exit(1);
+if (!$netatmo->getExistingTokens()) {
+    $logger->warn('No existing token found, try to get it with username and password');
+    // No existing token found, connect with username and password read from stdin
+    function prompt($question)
+    {
+        echo "\r\n$question: ";
+        $stdin = fopen('php://stdin', 'r');
+        $response = fgets($stdin);
+        fclose($stdin);
+        return trim($response);
+    }
+    $username = prompt('Your netatmo account username');
+    $password = prompt('Your netatmo account password');
+    if (!$netatmo->getToken($username, $password)) {
+        exit(1);
+    }
 }
 
 // Retrieve user's Weather Stations Information

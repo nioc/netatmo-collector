@@ -18,6 +18,7 @@ class Netatmo
     const MAX_REQUESTS_BY_MODULE = 50;
     const WAITING_TIME_BEFORE_NEXT_MODULE = 10;
     const COLLECT_INTERVAL = 1000;
+    const TOKENS_FILE = 'tokens.json';
 
     /**
      * Initialize a Netatmo wrapper
@@ -33,8 +34,6 @@ class Netatmo
         $configNetatmo = [];
         $configNetatmo['client_id'] = $config['client_id'];
         $configNetatmo['client_secret'] = $config['client_secret'];
-        $configNetatmo['username'] = $config['username'];
-        $configNetatmo['password'] = $config['password'];
         $configNetatmo['scope'] = Netatmo\Common\NAScopes::SCOPE_READ_STATION;
         $this->isMocked =  $config['mock'];
         if ($this->isMocked) {
@@ -49,23 +48,69 @@ class Netatmo
     }
 
     /**
-     * Authentication with Netatmo server (OAuth2)
+     * Retrieve previous tokens
      *
      * @return Authentication result
      */
-    public function getToken()
+    public function getExistingTokens()
+    {
+        if (!$this->isMocked) {
+            $this->logger->debug('Try to get existing tokens');
+            $tokensString = @file_get_contents($this::TOKENS_FILE);
+            if ($tokensString === false) {
+                // File not found
+                $this->logger->debug('No tokens file found');
+                return false;
+            }
+            $tokens = json_decode($tokensString, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // Invalid JSON
+                $this->logger->debug('Invalid tokens file');
+                return false;
+            }
+            if (!array_key_exists('refresh_token', $tokens)) {
+                // Missing refresh token
+                $this->logger->debug('Missing refresh token');
+                return false;
+            }
+            if (!is_null($tokens['expires_at']) && $tokens['expires_at'] < time()) {
+                // access_token expired.
+                $this->logger->debug('Access token expired');
+                unset($tokens['access_token']);
+            }
+            $this->client->setTokensFromStore($tokens);
+            $this->logger->debug('Using existing tokens');
+        }
+        return true;
+    }
+
+    /**
+     * Authentication with Netatmo server (OAuth2)
+     *
+     * @param string $username Netatmo account username
+     * @param string $password Netatmo account password
+     *
+     * @return Authentication result
+     */
+    public function getToken($username, $password)
     {
         if (!$this->isMocked) {
             try {
-                $this->logger->debug('Request token');
+                $this->logger->debug('Request token with provided username and password');
+                $this->client->setVariable('username', $username);
+                $this->client->setVariable('password', $password);
                 $tokens = $this->client->getAccessToken();
-                $this->logger->debug('Token reived');
-                $this->logger->trace('Token: '.json_encode($tokens));
             } catch (Netatmo\Exceptions\NAClientException $e) {
-                $this->logger->error('An error occured while trying to retrieve your tokens');
+                $this->logger->error('An error occured while trying to get tokens, check your username and password');
                 $this->logger->debug('Reason: '.$e->getMessage());
                 return false;
             }
+            $this->logger->debug('Token received');
+            $this->logger->trace('Token: '.json_encode($tokens));
+            // Store tokens
+            $tokens['expires_at'] = time() + $tokens['expires_in'] - 30;
+            $this->logger->debug('Access token expires at ' . $tokens['expires_at']);
+            file_put_contents($this::TOKENS_FILE, json_encode($tokens));
         }
         return true;
     }
