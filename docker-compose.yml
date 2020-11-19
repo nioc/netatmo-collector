@@ -1,0 +1,28 @@
+version: '3.2'
+
+services:
+  php:
+    image: php:alpine
+    working_dir: /usr/src/app
+    command: php index.php 2020-11-19
+    depends_on:
+      - influxdb
+    volumes:
+      - .:/usr/src/app
+
+  composer:
+    image: composer:latest
+    command: ["composer", "install"]
+    volumes:
+      - .:/app
+
+  influxdb:
+    image: influxdb:alpine
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb:/var/lib/influxdb
+
+volumes:
+  influxdb:
