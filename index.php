@@ -57,7 +57,7 @@ if (!$netatmo->getStations()) {
 
 // For each stations request measures for every modules
 foreach ($netatmo->devices as $device) {
-    $logger->debug('Handling device: ' . $device['station_name']);
+    $logger->debug('Handling device: ' . $device['home_name']);
 
     // First, get main indoor module
     $netatmo->getMeasures($startTimestamp, $device, null);

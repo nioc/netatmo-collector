@@ -12,6 +12,7 @@ class Netatmo
     private $logger;
     private $client;
     private $isMocked;
+    private $defaultDeviceName;
     public $devices;
     private $todayTimestamp;
     private $storage;
@@ -42,6 +43,7 @@ class Netatmo
         $configNetatmo['client_id'] = $config['client_id'];
         $configNetatmo['client_secret'] = $config['client_secret'];
         $configNetatmo['scope'] = Netatmo\Common\NAScopes::SCOPE_READ_STATION;
+        $this->defaultDeviceName = $config['defaultDeviceName'];
         $this->isMocked =  $config['mock'];
         if ($this->isMocked) {
             $this->logger->warn('API is mocked');
@@ -164,7 +166,12 @@ class Netatmo
     public function getMeasures($startTimestamp, $device, $module)
     {
         $deviceId = $device['_id'];
-        $deviceName = $device['station_name'];
+        $deviceName = $device['home_name'];
+        // Override deviceName according to configuration
+        if ($this->defaultDeviceName !== '') {
+            $this->logger->info("Override deviceName from config: $deviceName -> $this->defaultDeviceName");
+            $deviceName = $this->defaultDeviceName;
+        }
         // default values for module
         $moduleId = null;
         $moduleName = $device['module_name'];
