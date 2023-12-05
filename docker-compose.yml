@@ -2,9 +2,9 @@ version: '3.2'
 
 services:
   php:
-    image: php:alpine
+    image: php:7.4-alpine
     working_dir: /usr/src/app
-    command: php index.php 2020-11-19
+    command: php index.php 2023-12-05
     depends_on:
       - influxdb
     volumes:
@@ -17,7 +17,7 @@ services:
       - .:/app
 
   influxdb:
-    image: influxdb:alpine
+    image: influxdb:1.8-alpine
     restart: unless-stopped
     ports:
       - "8086:8086"

@@ -21,7 +21,16 @@ Netatmo collector is a PHP script for requesting measures from Netatmo devices.
 
 Download this project and extract files to directory of your choice.
 
-Configure a Netatmo [application](https://dev.netatmo.com/myaccount/createanapp) and user account informations in `config.php`.
+In order to authenticate yourself on the Netatmo API, you must:
+
+-   create a Netatmo [application](https://dev.netatmo.com/myaccount/createanapp),
+-   generate a token with `read_station` scope,
+-   enter your `client_id` and `client_secret` values in `config.php`,
+-   create a `tokens.json` file with this content (replace the 2 values between `<>` with your tokens):
+
+``` json
+{"access_token":"<yourAccessToken>","refresh_token":"<yourRefreshToken >","scope":["read_station"],"expires_in":10800,"expire_in":10800,"expires_at":0}
+```
 
 ### Dependencies
 

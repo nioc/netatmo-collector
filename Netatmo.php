@@ -88,38 +88,14 @@ class Netatmo
                 unset($tokens['access_token']);
             }
             $this->client->setTokensFromStore($tokens);
-            $this->logger->debug('Using existing tokens');
-        }
-        return true;
-    }
-
-    /**
-     * Authentication with Netatmo server (OAuth2)
-     *
-     * @param string $username Netatmo account username
-     * @param string $password Netatmo account password
-     *
-     * @return Authentication result
-     */
-    public function getToken($username, $password)
-    {
-        if (!$this->isMocked) {
-            try {
-                $this->logger->debug('Request token with provided username and password');
-                $this->client->setVariable('username', $username);
-                $this->client->setVariable('password', $password);
-                $tokens = $this->client->getAccessToken();
-            } catch (Netatmo\Exceptions\NAClientException $e) {
-                $this->logger->error('An error occured while trying to get tokens, check your username and password');
-                $this->logger->debug('Reason: '.$e->getMessage());
-                return false;
+            $newTokens = $this->client->getAccessToken();
+            if (array_key_exists('refresh_token', $newTokens)) {
+                $this->logger->debug('Refresh token updated');
+                $newTokens['expires_at'] = time() + $newTokens['expires_in'] - 30;
+                $this->logger->trace('Update tokens: '.json_encode($newTokens));
+                file_put_contents($this::TOKENS_FILE, json_encode($newTokens));
             }
-            $this->logger->debug('Token received');
-            $this->logger->trace('Token: '.json_encode($tokens));
-            // Store tokens
-            $tokens['expires_at'] = time() + $tokens['expires_in'] - 30;
-            $this->logger->debug('Access token expires at ' . $tokens['expires_at']);
-            file_put_contents($this::TOKENS_FILE, json_encode($tokens));
+            $this->logger->debug('Using existing tokens');
         }
         return true;
     }

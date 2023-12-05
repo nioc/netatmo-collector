@@ -1,1 +1,4 @@
 vendor
+mock/
+netatmo-collect.log
+tokens.json
